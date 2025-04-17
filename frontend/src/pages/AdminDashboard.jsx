@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 function AdminDashboard() {
   const [surveys, setSurveys] = useState([]);
   const [page, setPage] = useState(1);
+  const [selectedSurvey, setSelectedSurvey] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const pageSize = 5;
   const navigate = useNavigate();
   const { isAuthenticated, logout } = useAuthStore();
@@ -31,6 +33,31 @@ function AdminDashboard() {
 
   const totalPages = Math.ceil(surveys.length / pageSize);
   const paginated = surveys.slice((page - 1) * pageSize, page * pageSize);
+
+  const openModal = (survey) => {
+    setSelectedSurvey(survey);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedSurvey(null);
+  };
+
+  const formatDateTime = (dateString) => {
+    const date = new Date(dateString);
+
+    const formattedDate = `${date.getDate()}/${
+      date.getMonth() + 1
+    }/${date.getFullYear()}`;
+
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const seconds = date.getSeconds().toString().padStart(2, "0");
+    const formattedTime = `${hours}:${minutes}:${seconds}`;
+
+    return `${formattedDate} at ${formattedTime}`;
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -87,9 +114,7 @@ function AdminDashboard() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       <button
-                        onClick={() =>
-                          toast.success("Details view coming soon!")
-                        }
+                        onClick={() => openModal(survey)}
                         className="text-indigo-400 hover:text-indigo-300 transition-colors duration-300 cursor-pointer"
                       >
                         View Details
@@ -134,6 +159,132 @@ function AdminDashboard() {
           >
             Next
           </button>
+        </div>
+      )}
+
+      {isModalOpen && selectedSurvey && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div
+            className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm transition-opacity"
+            onClick={closeModal}
+          ></div>
+
+          <div
+            className="relative bg-gray-900 rounded-lg max-w-2xl w-full mx-4 border border-indigo-500 shadow-xl transform transition-all"
+            style={{ boxShadow: "0 0 30px rgba(79, 70, 229, 0.4)" }}
+          >
+            <div className="border-b border-indigo-500 px-6 py-4 flex items-center justify-between">
+              <h3
+                className="text-xl font-bold text-white"
+                style={{ textShadow: "0 0 5px #4f46e5" }}
+              >
+                Survey Details
+              </h3>
+              <button
+                onClick={closeModal}
+                className="text-gray-400 hover:text-white focus:outline-none cursor-pointer"
+              >
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <div className="px-6 py-4 max-h-[70vh] overflow-y-auto">
+              <div className="space-y-4">
+                <div>
+                  <h4 className="text-sm font-medium text-indigo-400">
+                    Full Name
+                  </h4>
+                  <p className="text-white text-lg">{selectedSurvey.name}</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="text-sm font-medium text-indigo-400">
+                      Gender
+                    </h4>
+                    <p className="text-white">
+                      {selectedSurvey.gender || "Not specified"}
+                    </p>
+                  </div>
+
+                  <div>
+                    <h4 className="text-sm font-medium text-indigo-400">
+                      Nationality
+                    </h4>
+                    <p className="text-white">{selectedSurvey.nationality}</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="text-sm font-medium text-indigo-400">
+                      Email
+                    </h4>
+                    <p className="text-white break-words">
+                      {selectedSurvey.email}
+                    </p>
+                  </div>
+
+                  <div>
+                    <h4 className="text-sm font-medium text-indigo-400">
+                      Phone
+                    </h4>
+                    <p className="text-white">{selectedSurvey.phone}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-medium text-indigo-400">
+                    Address
+                  </h4>
+                  <p className="text-white whitespace-pre-line">
+                    {selectedSurvey.address}
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-medium text-indigo-400">
+                    Message
+                  </h4>
+                  <p className="text-white whitespace-pre-line">
+                    {selectedSurvey.message}
+                  </p>
+                </div>
+
+                {selectedSurvey.createdAt && (
+                  <div>
+                    <h4 className="text-sm font-medium text-indigo-400">
+                      Submission Date
+                    </h4>
+                    <p className="text-white">
+                      {formatDateTime(selectedSurvey.createdAt)}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="border-t border-indigo-500 px-6 py-4 flex justify-end">
+              <button
+                onClick={closeModal}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900 cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
