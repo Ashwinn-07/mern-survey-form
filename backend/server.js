@@ -8,15 +8,12 @@ import connectDB from "./config/db.js";
 
 const app = express();
 
-// Connect Database
 await connectDB();
 
-// Middleware
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
 // app.use("/api/surveys", surveyRoutes);
 // app.use("/api/admin", adminRoutes);
 app.use(
