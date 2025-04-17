@@ -1,20 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ClipboardList } from "lucide-react";
 import api from "../api/axios";
 import { useAuthStore } from "../store/auth";
+import { toast } from "react-hot-toast";
 
 function Navbar() {
   const navigate = useNavigate();
   const { isAuthenticated, logout } = useAuthStore();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
-  const handleLogout = async () => {
+  const initiateLogout = () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const cancelLogout = () => {
+    setShowLogoutConfirm(false);
+  };
+
+  const confirmLogout = async () => {
     try {
       await api.post("/admin/logout");
+      toast.success("Logged out successfully");
     } catch (err) {
       console.error("Logout error:", err);
+      toast.error("Logout failed. Please try again.");
     }
     logout();
+    setShowLogoutConfirm(false);
     navigate("/admin/login");
   };
 
@@ -41,7 +54,7 @@ function Navbar() {
                   Dashboard
                 </Link>
                 <button
-                  onClick={handleLogout}
+                  onClick={initiateLogout}
                   className="text-indigo-400 hover:text-indigo-300 transition-colors duration-300 cursor-pointer"
                 >
                   Logout
@@ -58,6 +71,33 @@ function Navbar() {
           </div>
         </div>
       </div>
+
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-gray-800 border border-indigo-500 rounded-lg p-6 max-w-sm w-full">
+            <h3 className="text-xl font-medium text-white mb-4">
+              Confirm Logout
+            </h3>
+            <p className="text-gray-300 mb-6">
+              Are you sure you want to log out?
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={cancelLogout}
+                className="px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-600 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmLogout}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors cursor-pointer"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

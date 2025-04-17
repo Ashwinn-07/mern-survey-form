@@ -14,6 +14,7 @@ function SurveyForm() {
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const validateForm = () => {
     const newErrors = {};
@@ -50,7 +51,7 @@ function SurveyForm() {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const initiateSubmit = (e) => {
     e.preventDefault();
 
     if (!validateForm()) {
@@ -58,7 +59,17 @@ function SurveyForm() {
       return;
     }
 
+    setShowConfirmation(true);
+  };
+
+  const cancelSubmit = () => {
+    setShowConfirmation(false);
+  };
+
+  const confirmSubmit = async () => {
     setLoading(true);
+    setShowConfirmation(false);
+
     try {
       const res = await api.post("/surveys/", formData);
       toast.success(res.data.message || "Survey submitted successfully!");
@@ -92,7 +103,7 @@ function SurveyForm() {
         >
           Survey Form
         </h2>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={initiateSubmit} className="space-y-6">
           <div>
             <label
               htmlFor="name"
@@ -262,6 +273,33 @@ function SurveyForm() {
           </div>
         </form>
       </div>
+
+      {showConfirmation && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-gray-800 border border-indigo-500 rounded-lg p-6 max-w-sm w-full">
+            <h3 className="text-xl font-medium text-white mb-4">
+              Confirm Submission
+            </h3>
+            <p className="text-gray-300 mb-6">
+              Are you sure you want to submit this survey?
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={cancelSubmit}
+                className="px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-600 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmSubmit}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors cursor-pointer"
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
