@@ -11,12 +11,12 @@ export const STATUS_CODES = {
 
 export const MESSAGES = {
   SUCCESS: {
-    SURVEY_SUBMITTED: "Survey submitted successfully!",
+    SURVEY_SUBMITTED: "Survey submitted successfully",
     LOGIN: "Admin logged in successfully",
-    ACCESS_DENIED: "Access denied. No token provided.",
+    ACCESS_DENIED: "Access denied. No token provided",
   },
   ERROR: {
-    INVALID_TOKEN: "Invalid token.",
+    INVALID_TOKEN: "Invalid token",
     INVALID_CREDENTIALS: "Invalid credentials",
   },
 };
