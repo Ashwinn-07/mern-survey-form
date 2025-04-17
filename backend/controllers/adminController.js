@@ -1,6 +1,6 @@
-import Admin from "../models/adminSchema";
+import Admin from "../models/adminSchema.js";
 import jwt from "jsonwebtoken";
-import { STATUS_CODES, MESSAGES } from "../utils/constants";
+import { STATUS_CODES, MESSAGES } from "../utils/constants.js";
 
 export const adminLogin = async (req, res) => {
   const { username, password } = req.body;

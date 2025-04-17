@@ -1,5 +1,5 @@
-import Survey from "../models/surveySchema";
-import { STATUS_CODES, MESSAGES } from "../utils/constants";
+import Survey from "../models/surveySchema.js";
+import { STATUS_CODES, MESSAGES } from "../utils/constants.js";
 
 export const createSurvey = async (req, res) => {
   try {

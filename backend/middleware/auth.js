@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { STATUS_CODES, MESSAGES } from "../utils/constants";
+import { STATUS_CODES, MESSAGES } from "../utils/constants.js";
 
 export const protect = (req, res, next) => {
   let token;
