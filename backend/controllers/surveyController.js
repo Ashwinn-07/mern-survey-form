@@ -20,21 +20,21 @@ export const createSurvey = async (req, res) => {
     if (missingFields.length > 0) {
       return res.status(STATUS_CODES.BAD_REQUEST).json({
         success: false,
-        message: `Missing required fields: ${missingFields.join(", ")}`,
+        message: MESSAGES.ERROR.SURVEY_REQUIRED_FIELDS,
       });
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return res.status(STATUS_CODES.BAD_REQUEST).json({
         success: false,
-        message: "Invalid email format",
+        message: MESSAGES.ERROR.INVALID_EMAIL,
       });
     }
     const phoneDigits = phone.replace(/\D/g, "");
     if (phoneDigits.length < 10 || phoneDigits.length > 15) {
       return res.status(STATUS_CODES.BAD_REQUEST).json({
         success: false,
-        message: "Phone number must be between 10-15 digits",
+        message: MESSAGES.ERROR.INVALID_PHONE,
       });
     }
     const survey = new Survey(req.body);

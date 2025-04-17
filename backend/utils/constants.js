@@ -14,11 +14,14 @@ export const MESSAGES = {
     SURVEY_SUBMITTED: "Survey submitted successfully",
     LOGIN: "Admin logged in successfully",
     LOGOUT: "Logged out successfully",
-    ACCESS_DENIED: "Access denied. No token provided",
   },
   ERROR: {
     INVALID_TOKEN: "Invalid token",
     INVALID_CREDENTIALS: "Invalid credentials",
     TOKEN_EXPIRED: "Token expired. Please login again",
+    REQUIRED_FIELDS: "Username and password are required",
+    SURVEY_REQUIRED_FIELDS: "All survey fields are required",
+    INVALID_EMAIL: "Invalid email format",
+    INVALID_PHONE: "Phone number must be between 10-15 digits",
   },
 };

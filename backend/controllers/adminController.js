@@ -4,6 +4,12 @@ import { STATUS_CODES, MESSAGES } from "../utils/constants.js";
 
 export const adminLogin = async (req, res) => {
   const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(STATUS_CODES.BAD_REQUEST).json({
+      success: false,
+      message: MESSAGES.ERROR.REQUIRED_FIELDS,
+    });
+  }
   try {
     const admin = await Admin.findOne({ username });
     if (!admin)

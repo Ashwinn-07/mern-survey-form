@@ -11,11 +11,42 @@ function AdminLogin() {
     username: "",
     password: "",
   });
+  const [errors, setErrors] = useState({});
   const setAuth = useAuthStore((state) => state.setAuth);
   const [loading, setLoading] = useState(false);
 
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!credentials.username.trim()) {
+      newErrors.username = "Username is required";
+    }
+
+    if (!credentials.password.trim()) {
+      newErrors.password = "Password is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setCredentials({ ...credentials, [name]: value });
+
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: "" });
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await api.post("/admin/login", credentials);
@@ -55,14 +86,16 @@ function AdminLogin() {
                 id="username"
                 name="username"
                 type="text"
-                required
                 value={credentials.username}
-                onChange={(e) =>
-                  setCredentials({ ...credentials, username: e.target.value })
-                }
-                className="appearance-none rounded-t-md block w-full px-3 py-2 bg-gray-800 border border-indigo-500 text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                onChange={handleChange}
+                className={`appearance-none rounded-t-md block w-full px-3 py-2 bg-gray-800 border text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${
+                  errors.username ? "border-red-500" : "border-indigo-500"
+                }`}
                 placeholder="Username"
               />
+              {errors.username && (
+                <p className="text-red-500 text-xs mt-1">{errors.username}</p>
+              )}
             </div>
             <div>
               <label htmlFor="password" className="sr-only">
@@ -72,14 +105,16 @@ function AdminLogin() {
                 id="password"
                 name="password"
                 type="password"
-                required
                 value={credentials.password}
-                onChange={(e) =>
-                  setCredentials({ ...credentials, password: e.target.value })
-                }
-                className="appearance-none rounded-b-md block w-full px-3 py-2 bg-gray-800 border border-indigo-500 text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                onChange={handleChange}
+                className={`appearance-none rounded-b-md block w-full px-3 py-2 bg-gray-800 border text-white placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${
+                  errors.password ? "border-red-500" : "border-indigo-500"
+                }`}
                 placeholder="Password"
               />
+              {errors.password && (
+                <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+              )}
             </div>
           </div>
           <div>
