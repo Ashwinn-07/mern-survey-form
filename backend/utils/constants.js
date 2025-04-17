@@ -18,5 +18,6 @@ export const MESSAGES = {
   ERROR: {
     INVALID_TOKEN: "Invalid token",
     INVALID_CREDENTIALS: "Invalid credentials",
+    TOKEN_EXPIRED: "Token expired. Please login again",
   },
 };
