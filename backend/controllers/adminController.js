@@ -25,9 +25,11 @@ export const adminLogin = async (req, res) => {
       sameSite: "Strict",
       maxAge: 3600000,
     });
-    res
-      .status(STATUS_CODES.OK)
-      .json({ success: true, message: MESSAGES.SUCCESS.LOGIN });
+    res.status(STATUS_CODES.OK).json({
+      success: true,
+      message: MESSAGES.SUCCESS.LOGIN,
+      user: { username: admin.username },
+    });
   } catch (error) {
     res
       .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
