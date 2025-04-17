@@ -1,14 +1,21 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ClipboardList } from "lucide-react";
+import useAuthStore from "../store/auth";
+import api from "../api/axios";
 
 function Navbar() {
   const navigate = useNavigate();
-  const isAdmin = sessionStorage.getItem("adminToken");
+  const { isAuthenticated, logout } = useAuthStore();
 
-  const handleLogout = () => {
-    sessionStorage.removeItem("adminToken");
-    navigate("/admin");
+  const handleLogout = async () => {
+    try {
+      await api.post("/admin/logout");
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
+    logout();
+    navigate("/admin/login");
   };
 
   return (
@@ -25,10 +32,10 @@ function Navbar() {
             </span>
           </Link>
           <div className="flex items-center space-x-4">
-            {isAdmin ? (
+            {isAuthenticated ? (
               <>
                 <Link
-                  to="/dashboard"
+                  to="/admin/dashboard"
                   className="text-indigo-400 hover:text-indigo-300 transition-colors duration-300"
                 >
                   Dashboard
@@ -42,7 +49,7 @@ function Navbar() {
               </>
             ) : (
               <Link
-                to="/admin"
+                to="/admin/login"
                 className="text-indigo-400 hover:text-indigo-300 transition-colors duration-300"
               >
                 Admin Login

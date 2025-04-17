@@ -36,3 +36,14 @@ export const adminLogin = async (req, res) => {
       .json({ success: false, error: error.message });
   }
 };
+
+export const adminLogout = (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "Strict",
+  });
+  res
+    .status(STATUS_CODES.OK)
+    .json({ success: true, message: MESSAGES.SUCCESS.LOGOUT });
+};

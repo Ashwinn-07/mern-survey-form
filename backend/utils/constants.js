@@ -13,6 +13,7 @@ export const MESSAGES = {
   SUCCESS: {
     SURVEY_SUBMITTED: "Survey submitted successfully",
     LOGIN: "Admin logged in successfully",
+    LOGOUT: "Logged out successfully",
     ACCESS_DENIED: "Access denied. No token provided",
   },
   ERROR: {
