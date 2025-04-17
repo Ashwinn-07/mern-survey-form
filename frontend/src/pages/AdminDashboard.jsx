@@ -143,7 +143,7 @@ function AdminDashboard() {
             <button
               key={i}
               onClick={() => setPage(i + 1)}
-              className={`px-3 py-1 rounded ${
+              className={`px-3 py-1 rounded cursor-pointer ${
                 page === i + 1
                   ? "bg-indigo-600 text-white"
                   : "bg-gray-800 text-gray-300"
