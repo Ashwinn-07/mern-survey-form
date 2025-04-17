@@ -12,14 +12,52 @@ function SurveyForm() {
     address: "",
     message: "",
   });
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
+  const validateForm = () => {
+    const newErrors = {};
+
+    Object.keys(formData).forEach((key) => {
+      if (!formData[key].trim()) {
+        newErrors[key] = `${
+          key.charAt(0).toUpperCase() + key.slice(1)
+        } is required`;
+      }
+    });
+
+    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    if (
+      formData.phone &&
+      !/^\d{10,15}$/.test(formData.phone.replace(/\D/g, ""))
+    ) {
+      newErrors.phone = "Please enter a valid phone number (10-15 digits)";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: "" });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      toast.error("Please fix the errors in the form");
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await api.post("/surveys/", formData);
@@ -33,6 +71,7 @@ function SurveyForm() {
         address: "",
         message: "",
       });
+      setErrors({});
     } catch (error) {
       console.error("Submission error:", error);
       toast.error(error.response?.data?.message || "Survey submission failed.");
@@ -67,9 +106,13 @@ function SurveyForm() {
               id="name"
               value={formData.name}
               onChange={handleChange}
-              required
-              className="block w-full rounded-md bg-gray-800 border-indigo-500 text-white placeholder-gray-400 focus:border-indigo-400 focus:ring focus:ring-indigo-400 focus:ring-opacity-50 transition-shadow duration-300"
+              className={`block w-full rounded-md bg-gray-800 border-indigo-500 text-white placeholder-gray-400 focus:border-indigo-400 focus:ring focus:ring-indigo-400 focus:ring-opacity-50 transition-shadow duration-300 ${
+                errors.name ? "border-red-500" : ""
+              }`}
             />
+            {errors.name && (
+              <p className="mt-1 text-sm text-red-500">{errors.name}</p>
+            )}
           </div>
 
           <div>
@@ -84,14 +127,18 @@ function SurveyForm() {
               id="gender"
               value={formData.gender}
               onChange={handleChange}
-              required
-              className="block w-full rounded-md bg-gray-800 border-indigo-500 text-white placeholder-gray-400 focus:border-indigo-400 focus:ring focus:ring-indigo-400 focus:ring-opacity-50 transition-shadow duration-300"
+              className={`block w-full rounded-md bg-gray-800 border-indigo-500 text-white placeholder-gray-400 focus:border-indigo-400 focus:ring focus:ring-indigo-400 focus:ring-opacity-50 transition-shadow duration-300 ${
+                errors.gender ? "border-red-500" : ""
+              }`}
             >
               <option value="">Select Gender</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
               <option value="other">Other</option>
             </select>
+            {errors.gender && (
+              <p className="mt-1 text-sm text-red-500">{errors.gender}</p>
+            )}
           </div>
 
           <div>
@@ -107,9 +154,13 @@ function SurveyForm() {
               id="nationality"
               value={formData.nationality}
               onChange={handleChange}
-              required
-              className="block w-full rounded-md bg-gray-800 border-indigo-500 text-white placeholder-gray-400 focus:border-indigo-400 focus:ring focus:ring-indigo-400 focus:ring-opacity-50 transition-shadow duration-300"
+              className={`block w-full rounded-md bg-gray-800 border-indigo-500 text-white placeholder-gray-400 focus:border-indigo-400 focus:ring focus:ring-indigo-400 focus:ring-opacity-50 transition-shadow duration-300 ${
+                errors.nationality ? "border-red-500" : ""
+              }`}
             />
+            {errors.nationality && (
+              <p className="mt-1 text-sm text-red-500">{errors.nationality}</p>
+            )}
           </div>
 
           <div>
@@ -125,9 +176,13 @@ function SurveyForm() {
               id="email"
               value={formData.email}
               onChange={handleChange}
-              required
-              className="block w-full rounded-md bg-gray-800 border-indigo-500 text-white placeholder-gray-400 focus:border-indigo-400 focus:ring focus:ring-indigo-400 focus:ring-opacity-50 transition-shadow duration-300"
+              className={`block w-full rounded-md bg-gray-800 border-indigo-500 text-white placeholder-gray-400 focus:border-indigo-400 focus:ring focus:ring-indigo-400 focus:ring-opacity-50 transition-shadow duration-300 ${
+                errors.email ? "border-red-500" : ""
+              }`}
             />
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+            )}
           </div>
 
           <div>
@@ -143,9 +198,13 @@ function SurveyForm() {
               id="phone"
               value={formData.phone}
               onChange={handleChange}
-              required
-              className="block w-full rounded-md bg-gray-800 border-indigo-500 text-white placeholder-gray-400 focus:border-indigo-400 focus:ring focus:ring-indigo-400 focus:ring-opacity-50 transition-shadow duration-300"
+              className={`block w-full rounded-md bg-gray-800 border-indigo-500 text-white placeholder-gray-400 focus:border-indigo-400 focus:ring focus:ring-indigo-400 focus:ring-opacity-50 transition-shadow duration-300 ${
+                errors.phone ? "border-red-500" : ""
+              }`}
             />
+            {errors.phone && (
+              <p className="mt-1 text-sm text-red-500">{errors.phone}</p>
+            )}
           </div>
 
           <div>
@@ -161,9 +220,13 @@ function SurveyForm() {
               rows="3"
               value={formData.address}
               onChange={handleChange}
-              required
-              className="block w-full rounded-md bg-gray-800 border-indigo-500 text-white placeholder-gray-400 focus:border-indigo-400 focus:ring focus:ring-indigo-400 focus:ring-opacity-50 transition-shadow duration-300"
+              className={`block w-full rounded-md bg-gray-800 border-indigo-500 text-white placeholder-gray-400 focus:border-indigo-400 focus:ring focus:ring-indigo-400 focus:ring-opacity-50 transition-shadow duration-300 ${
+                errors.address ? "border-red-500" : ""
+              }`}
             ></textarea>
+            {errors.address && (
+              <p className="mt-1 text-sm text-red-500">{errors.address}</p>
+            )}
           </div>
 
           <div>
@@ -179,9 +242,13 @@ function SurveyForm() {
               rows="4"
               value={formData.message}
               onChange={handleChange}
-              required
-              className="block w-full rounded-md bg-gray-800 border-indigo-500 text-white placeholder-gray-400 focus:border-indigo-400 focus:ring focus:ring-indigo-400 focus:ring-opacity-50 transition-shadow duration-300"
+              className={`block w-full rounded-md bg-gray-800 border-indigo-500 text-white placeholder-gray-400 focus:border-indigo-400 focus:ring focus:ring-indigo-400 focus:ring-opacity-50 transition-shadow duration-300 ${
+                errors.message ? "border-red-500" : ""
+              }`}
             ></textarea>
+            {errors.message && (
+              <p className="mt-1 text-sm text-red-500">{errors.message}</p>
+            )}
           </div>
 
           <div>
