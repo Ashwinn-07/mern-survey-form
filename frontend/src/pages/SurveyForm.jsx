@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import api from "../api/axios";
 import { toast } from "react-hot-toast";
 
 function SurveyForm() {
@@ -11,23 +12,33 @@ function SurveyForm() {
     address: "",
     message: "",
   });
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    toast.success("Survey submitted successfully! (Demo)");
-    setFormData({
-      name: "",
-      gender: "",
-      nationality: "",
-      email: "",
-      phone: "",
-      address: "",
-      message: "",
-    });
-  };
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await api.post("/surveys/", formData);
+      toast.success(res.data.message || "Survey submitted successfully!");
+      setFormData({
+        name: "",
+        gender: "",
+        nationality: "",
+        email: "",
+        phone: "",
+        address: "",
+        message: "",
+      });
+    } catch (error) {
+      console.error("Submission error:", error);
+      toast.error(error.response?.data?.message || "Survey submission failed.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -176,9 +187,10 @@ function SurveyForm() {
           <div>
             <button
               type="submit"
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 hover:shadow-[0_0_20px_rgba(79,70,229,0.5)] cursor-pointer"
+              disabled={loading}
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 hover:shadow-[0_0_20px_rgba(79,70,229,0.5)] cursor-pointer disabled:opacity-50"
             >
-              Submit Survey
+              {loading ? "Submitting..." : "Submit Survey"}
             </button>
           </div>
         </form>

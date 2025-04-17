@@ -1,8 +1,8 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ClipboardList } from "lucide-react";
-import useAuthStore from "../store/auth";
 import api from "../api/axios";
+import { useAuthStore } from "../store/auth";
 
 function Navbar() {
   const navigate = useNavigate();

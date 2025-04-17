@@ -26,9 +26,9 @@ function App() {
         <main className="flex-1 bg-gray-900">
           <Routes>
             <Route path="/" element={<SurveyForm />} />
-            <Route path="/admin" element={<AdminLogin />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
             <Route
-              path="/dashboard"
+              path="/admin/dashboard"
               element={
                 <ProtectedRoute>
                   <AdminDashboard />

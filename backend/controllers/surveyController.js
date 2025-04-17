@@ -11,6 +11,7 @@ export const createSurvey = async (req, res) => {
       message: MESSAGES.SUCCESS.SURVEY_SUBMITTED,
     });
   } catch (error) {
+    console.error("Error while saving survey:", error);
     res
       .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
       .json({ success: false, error: error.message });
