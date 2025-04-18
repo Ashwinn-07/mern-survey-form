@@ -27,8 +27,8 @@ export const adminLogin = async (req, res) => {
     });
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
+      secure: true,
+      sameSite: "None",
       maxAge: 3600000,
     });
     res.status(STATUS_CODES.OK).json({
@@ -46,8 +46,8 @@ export const adminLogin = async (req, res) => {
 export const adminLogout = (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "Strict",
+    secure: true,
+    sameSite: "None",
   });
   res
     .status(STATUS_CODES.OK)
