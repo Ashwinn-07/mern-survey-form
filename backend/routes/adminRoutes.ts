@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { adminLogin, adminLogout } from "../controllers/adminController.js";
-import { getAllSurveys } from "../controllers/surveyController.js";
-import { protect } from "../middleware/auth.js";
+import { adminLogin, adminLogout } from "../controllers/adminController";
+import { getAllSurveys } from "../controllers/surveyController";
+import { protect } from "../middleware/auth";
 
 const router = Router();
 
