@@ -1,40 +1,49 @@
-import React, { useEffect, useState } from "react";
-import api from "../api/axios";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useAuthStore } from "../store/auth";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../store/auth";
+import { adminApi } from "../api/apiService";
+import type { Survey } from "../api/apiService";
+
+interface AuthStore {
+  isAuthenticated: boolean;
+  logout: () => void;
+}
 
 function AdminDashboard() {
-  const [surveys, setSurveys] = useState([]);
-  const [page, setPage] = useState(1);
-  const [selectedSurvey, setSelectedSurvey] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const pageSize = 5;
+  const [surveys, setSurveys] = useState<Survey[]>([]);
+  const [page, setPage] = useState<number>(1);
+  const [selectedSurvey, setSelectedSurvey] = useState<Survey | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const pageSize: number = 5;
   const navigate = useNavigate();
-  const { isAuthenticated, logout } = useAuthStore();
+  const { isAuthenticated, logout } = useAuthStore() as AuthStore;
 
   useEffect(() => {
     if (!isAuthenticated) {
       navigate("/admin/login");
       return;
     }
-    (async () => {
+
+    const fetchSurveys = async () => {
       try {
-        const res = await api.get("/admin/surveys");
-        setSurveys(res.data.data);
+        const response = await adminApi.getSurveys();
+        setSurveys(response.data);
       } catch (error) {
         console.error("Fetch surveys error:", error);
         toast.error("Failed to load surveys.");
         logout();
         navigate("/admin/login");
       }
-    })();
+    };
+
+    fetchSurveys();
   }, [isAuthenticated, navigate, logout]);
 
   const totalPages = Math.ceil(surveys.length / pageSize);
   const paginated = surveys.slice((page - 1) * pageSize, page * pageSize);
 
-  const openModal = (survey) => {
+  const openModal = (survey: Survey) => {
     setSelectedSurvey(survey);
     setIsModalOpen(true);
   };
@@ -44,7 +53,7 @@ function AdminDashboard() {
     setSelectedSurvey(null);
   };
 
-  const formatDateTime = (dateString) => {
+  const formatDateTime = (dateString: string): string => {
     const date = new Date(dateString);
 
     const formattedDate = `${date.getDate()}/${
@@ -95,7 +104,7 @@ function AdminDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-indigo-500">
-                {paginated.map((survey) => (
+                {paginated.map((survey: Survey) => (
                   <tr
                     key={survey._id}
                     className="hover:bg-gray-800 transition-colors duration-150"

@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ClipboardList } from "lucide-react";
-import api from "../api/axios";
-import { useAuthStore } from "../store/auth";
+import { adminApi } from "../api/apiService";
 import { toast } from "react-hot-toast";
+import { useAuthStore } from "../store/auth";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ function Navbar() {
 
   const confirmLogout = async () => {
     try {
-      await api.post("/admin/logout");
+      await adminApi.logout();
       toast.success("Logged out successfully");
     } catch (err) {
       console.error("Logout error:", err);

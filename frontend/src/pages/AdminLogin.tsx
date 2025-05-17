@@ -1,22 +1,31 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/axios";
 import { toast } from "react-hot-toast";
-import { useAuthStore } from "../store/auth";
+
 import { Lock } from "lucide-react";
+import { useAuthStore } from "../store/auth";
+import { adminApi } from "../api/apiService";
+import type { LoginCredentials } from "../api/apiService";
+
+interface FormErrors {
+  username?: string;
+  password?: string;
+  [key: string]: string | undefined;
+}
 
 function AdminLogin() {
   const navigate = useNavigate();
-  const [credentials, setCredentials] = useState({
+  const [credentials, setCredentials] = useState<LoginCredentials>({
     username: "",
     password: "",
   });
-  const [errors, setErrors] = useState({});
-  const setAuth = useAuthStore((state) => state.setAuth);
-  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
+  const setAuth = useAuthStore((state) => state.setAuth) as (user: any) => void;
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const validateForm = () => {
-    const newErrors = {};
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
 
     if (!credentials.username.trim()) {
       newErrors.username = "Username is required";
@@ -30,16 +39,16 @@ function AdminLogin() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setCredentials({ ...credentials, [name]: value });
 
     if (errors[name]) {
-      setErrors({ ...errors, [name]: "" });
+      setErrors({ ...errors, [name]: undefined });
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!validateForm()) {
@@ -49,11 +58,11 @@ function AdminLogin() {
 
     setLoading(true);
     try {
-      const res = await api.post("/admin/login", credentials);
-      setAuth(res.data.user);
-      toast.success(res.data.message || "Login successful!");
+      const response = await adminApi.login(credentials);
+      setAuth(response.user);
+      toast.success(response.message || "Login successful!");
       navigate("/admin/dashboard");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Login error:", error);
       toast.error(error.response?.data?.message || "Login failed");
     } finally {

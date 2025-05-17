@@ -1,9 +1,32 @@
-import React, { useState } from "react";
-import api from "../api/axios";
+import { useState } from "react";
+import type { ChangeEvent, FormEvent } from "react";
+import { surveyApi } from "../api/apiService";
 import { toast } from "react-hot-toast";
 
+interface FormData {
+  name: string;
+  gender: string;
+  nationality: string;
+  email: string;
+  phone: string;
+  address: string;
+  message: string;
+  [key: string]: string;
+}
+
+interface FormErrors {
+  name?: string;
+  gender?: string;
+  nationality?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  message?: string;
+  [key: string]: string | undefined;
+}
+
 function SurveyForm() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: "",
     gender: "",
     nationality: "",
@@ -12,12 +35,12 @@ function SurveyForm() {
     address: "",
     message: "",
   });
-  const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [loading, setLoading] = useState<boolean>(false);
+  const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
 
-  const validateForm = () => {
-    const newErrors = {};
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
 
     Object.keys(formData).forEach((key) => {
       if (!formData[key].trim()) {
@@ -42,16 +65,18 @@ function SurveyForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleChange = (e) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
 
     if (errors[name]) {
-      setErrors({ ...errors, [name]: "" });
+      setErrors({ ...errors, [name]: undefined });
     }
   };
 
-  const initiateSubmit = (e) => {
+  const initiateSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!validateForm()) {
@@ -62,17 +87,17 @@ function SurveyForm() {
     setShowConfirmation(true);
   };
 
-  const cancelSubmit = () => {
+  const cancelSubmit = (): void => {
     setShowConfirmation(false);
   };
 
-  const confirmSubmit = async () => {
+  const confirmSubmit = async (): Promise<void> => {
     setLoading(true);
     setShowConfirmation(false);
 
     try {
-      const res = await api.post("/surveys/", formData);
-      toast.success(res.data.message || "Survey submitted successfully!");
+      const res = await surveyApi.submitSurvey(formData);
+      toast.success(res.message || "Survey submitted successfully!");
       setFormData({
         name: "",
         gender: "",
@@ -83,7 +108,7 @@ function SurveyForm() {
         message: "",
       });
       setErrors({});
-    } catch (error) {
+    } catch (error: any) {
       console.error("Submission error:", error);
       toast.error(error.response?.data?.message || "Survey submission failed.");
     } finally {
@@ -228,7 +253,7 @@ function SurveyForm() {
             <textarea
               name="address"
               id="address"
-              rows="3"
+              rows={3}
               value={formData.address}
               onChange={handleChange}
               className={`block w-full rounded-md bg-gray-800 border-indigo-500 text-white placeholder-gray-400 focus:border-indigo-400 focus:ring focus:ring-indigo-400 focus:ring-opacity-50 transition-shadow duration-300 ${
@@ -250,7 +275,7 @@ function SurveyForm() {
             <textarea
               name="message"
               id="message"
-              rows="4"
+              rows={4}
               value={formData.message}
               onChange={handleChange}
               className={`block w-full rounded-md bg-gray-800 border-indigo-500 text-white placeholder-gray-400 focus:border-indigo-400 focus:ring focus:ring-indigo-400 focus:ring-opacity-50 transition-shadow duration-300 ${

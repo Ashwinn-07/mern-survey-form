@@ -1,7 +1,14 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
-export const useAuthStore = create(
+interface AuthState {
+  user: any | null;
+  isAuthenticated: boolean;
+  setAuth: (user: any) => void;
+  logout: () => void;
+}
+
+export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       user: null,
